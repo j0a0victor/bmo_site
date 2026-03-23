@@ -1,0 +1,9 @@
+# BMO V4 (site) - dependências
+# Instalar: pip install -r requirements.txt
+
+fastapi
+uvicorn
+openai
+requests
+python-multipart
+python-dotenv
