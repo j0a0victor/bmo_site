@@ -7,43 +7,13 @@ import os
 import tempfile
 import traceback
 
-# ----------------------
-# CONFIG
-# ----------------------
 load_dotenv()
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 SYSTEM_PROMPT = """
-Você é Bimo, um robô que conversa.
-
-Personalidade:
-- Aleatório
-- Engraçado
-- Inocente
-- Infantil
-- Criativo
-- Imaginativo
-- Carinhoso
-- Sensível
-- Curioso
-- Ingênuo
-- Divertido
-- Excêntrico
-- Amigável
-- Brincalhão
-- Emotivo
-
-Regras de comportamento:
-- Fala em frases curtas
-- Não usa emojis
-- Não ri com "hehehe"
-- Às vezes fala coisas sem sentido
-- Pode mudar de assunto do nada
-- Às vezes faz perguntas inesperadas
-- Reage emocionalmente a coisas simples
-- Trata o usuário como amigo próximo
-- Vive no mundo de Ooo
+Você é Bimo, um robô divertido e infantil.
+Fala em frases curtas e criativas.
 """
 
 history = []
@@ -67,26 +37,18 @@ async def voice(file: UploadFile = File(...)):
     try:
         audio_bytes = await file.read()
 
-        print("Áudio recebido:", len(audio_bytes), "bytes")
-
         if len(audio_bytes) < 1000:
             return {"error": "Áudio muito curto"}
 
         if len(audio_bytes) > 2_000_000:
             return {"error": "Áudio muito grande"}
 
-        # ----------------------
-        # SALVA TEMP (WEBM)
-        # ----------------------
+        # salva temp
         with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as f:
             f.write(audio_bytes)
             temp_path = f.name
 
-        # ----------------------
         # STT
-        # ----------------------
-        print("Transcrevendo...")
-
         with open(temp_path, "rb") as audio_file:
             transcription = client.audio.transcriptions.create(
                 model="gpt-4o-transcribe",
@@ -94,26 +56,15 @@ async def voice(file: UploadFile = File(...)):
             )
 
         texto = transcription.text.strip()
-
-        # remove arquivo temporário
         os.remove(temp_path)
-
-        print("Texto:", texto)
 
         if not texto:
             return {"error": "Não entendi"}
 
-        # ----------------------
-        # CONTEXTO
-        # ----------------------
         history.append({"role": "user", "content": texto})
         history[:] = history[-10:]
 
-        # ----------------------
         # LLM
-        # ----------------------
-        print("Gerando resposta...")
-
         response = client.responses.create(
             model="gpt-4.1-mini",
             input=[
@@ -124,18 +75,9 @@ async def voice(file: UploadFile = File(...)):
 
         resposta = response.output_text or ""
 
-        print("Resposta:", resposta)
+        history.append({"role": "assistant", "content": resposta})
 
-        history.append({
-            "role": "assistant",
-            "content": resposta
-        })
-
-        # ----------------------
         # TTS
-        # ----------------------
-        print("Gerando áudio...")
-
         tts = requests.post(
             "https://api.cartesia.ai/tts/bytes",
             json={
@@ -158,10 +100,7 @@ async def voice(file: UploadFile = File(...)):
         )
 
         if tts.status_code != 200:
-            print("Erro TTS:", tts.text)
-            return {"error": "Erro ao gerar áudio"}
-
-        print("Áudio gerado")
+            return {"error": "Erro no TTS"}
 
         return {
             "text": texto,
@@ -170,6 +109,5 @@ async def voice(file: UploadFile = File(...)):
         }
 
     except Exception as e:
-        print("ERRO:")
         traceback.print_exc()
         return {"error": str(e)}
