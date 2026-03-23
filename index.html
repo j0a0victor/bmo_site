@@ -87,6 +87,7 @@ let mediaRecorder;
 let audioChunks = [];
 let recording = false;
 let listeningWakeWord = false;
+let lastAudio = null;
 
 const btn = document.getElementById("btn");
 const statusEl = document.getElementById("status");
@@ -96,7 +97,9 @@ const chat = document.getElementById("chat");
 const startSound = new Audio("https://actions.google.com/sounds/v1/ui/click.ogg");
 const stopSound = new Audio("https://actions.google.com/sounds/v1/ui/confirm.ogg");
 
+// ----------------------
 // WAKE WORD
+// ----------------------
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition;
 
@@ -107,7 +110,7 @@ btn.onclick = () => {
 
 function startWakeWord() {
     if (!SpeechRecognition) {
-        alert("Sem suporte a voz");
+        alert("Seu navegador não suporta reconhecimento de voz");
         return;
     }
 
@@ -148,10 +151,20 @@ function startWakeWord() {
 
     recognition.start();
 }
-    
-// GRAVAÇÃO
+
+// ----------------------
+// GRAVAÇÃO COM SILÊNCIO
+// ----------------------
 async function startRecording() {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    const audioContext = new AudioContext();
+    const source = audioContext.createMediaStreamSource(stream);
+    const analyser = audioContext.createAnalyser();
+
+    source.connect(analyser);
+
+    const data = new Uint8Array(analyser.fftSize);
 
     mediaRecorder = new MediaRecorder(stream, {
         mimeType: "audio/webm"
@@ -170,7 +183,28 @@ async function startRecording() {
 
     startSound.play();
 
-    setTimeout(stopRecording, 6000);
+    let silenceStart = null;
+
+    function detectSilence() {
+        analyser.getByteTimeDomainData(data);
+
+        let volume = data.reduce((a, b) => a + Math.abs(b - 128), 0) / data.length;
+
+        if (volume < 5) {
+            if (!silenceStart) silenceStart = Date.now();
+
+            if (Date.now() - silenceStart > 1200) {
+                stopRecording();
+                return;
+            }
+        } else {
+            silenceStart = null;
+        }
+
+        if (recording) requestAnimationFrame(detectSilence);
+    }
+
+    detectSilence();
 }
 
 function stopRecording() {
@@ -185,7 +219,9 @@ function stopRecording() {
     stopSound.play();
 }
 
-// ENVIO
+// ----------------------
+// ENVIO PARA BACKEND
+// ----------------------
 async function sendAudio() {
     const blob = new Blob(audioChunks, { type: "audio/webm" });
 
@@ -219,6 +255,8 @@ async function sendAudio() {
         const audioBlob = new Blob([bytes], { type: "audio/wav" });
         const audio = new Audio(URL.createObjectURL(audioBlob));
 
+        lastAudio = audio;
+
         audio.play();
 
         audio.onended = () => {
@@ -230,9 +268,13 @@ async function sendAudio() {
     } catch (err) {
         console.error(err);
         statusEl.innerText = "Erro na conexão";
+        avatar.style.background = "#ef4444";
     }
 }
 
+// ----------------------
+// CHAT UI
+// ----------------------
 function addMessage(text, type) {
     const div = document.createElement("div");
     div.className = `msg ${type}`;
@@ -240,6 +282,16 @@ function addMessage(text, type) {
 
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
+}
+
+// ----------------------
+// REPLAY ÁUDIO
+// ----------------------
+function replayAudio() {
+    if (lastAudio) {
+        lastAudio.currentTime = 0;
+        lastAudio.play();
+    }
 }
 </script>
 
