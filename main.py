@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
@@ -49,6 +51,8 @@ Regras de comportamento:
 
 history = []
 
+BASE_DIR = Path(__file__).resolve().parent
+
 app = FastAPI()
 
 app.add_middleware(
@@ -63,7 +67,8 @@ app.add_middleware(
 # ----------------------
 @app.get("/", response_class=HTMLResponse)
 def serve_front():
-    with open("index.html", "r", encoding="utf-8") as f:
+    index_path = BASE_DIR / "index.html"
+    with open(index_path, "r", encoding="utf-8") as f:
         return f.read()
 
 # ----------------------
@@ -82,16 +87,10 @@ async def voice(file: UploadFile = File(...)):
         if len(audio_bytes) > 2_000_000:
             return {"error": "Áudio muito grande"}
 
-        # ----------------------
-        # SALVAR TEMP
-        # ----------------------
         with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as f:
             f.write(audio_bytes)
             temp_path = f.name
 
-        # ----------------------
-        # STT
-        # ----------------------
         print("Transcrevendo...")
 
         with open(temp_path, "rb") as audio_file:
@@ -100,8 +99,8 @@ async def voice(file: UploadFile = File(...)):
                 file=audio_file,
                 language="pt",
                 prompt="O usuário fala português brasileiro de forma natural."
-    )
-       
+            )
+
         texto = transcription.text.strip()
         os.remove(temp_path)
 
@@ -110,15 +109,9 @@ async def voice(file: UploadFile = File(...)):
         if not texto:
             return {"error": "Não entendi"}
 
-        # ----------------------
-        # CONTEXTO
-        # ----------------------
         history.append({"role": "user", "content": texto})
         history[:] = history[-10:]
 
-        # ----------------------
-        # LLM
-        # ----------------------
         print("Gerando resposta...")
 
         response = client.responses.create(
@@ -138,9 +131,6 @@ async def voice(file: UploadFile = File(...)):
             "content": resposta
         })
 
-        # ----------------------
-        # TTS (CARTESIA)
-        # ----------------------
         print("Gerando áudio...")
 
         tts = requests.post(
@@ -165,7 +155,6 @@ async def voice(file: UploadFile = File(...)):
             }
         )
 
-        # 🔥 DEBUG IMPORTANTE
         print("STATUS TTS:", tts.status_code)
 
         if tts.status_code != 200:
