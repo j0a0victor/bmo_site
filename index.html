@@ -1,95 +1,982 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Bimo AI</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BMO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+:root {
+    --blue: #0061f2;
+    --blue-dark: #0048b8;
+    --blue-soft: rgba(255, 255, 255, 0.12);
+    --white: #ffffff;
+    --text-muted: rgba(255, 255, 255, 0.85);
+    --surface: #f8fafc;
+    --chat-bg: #ffffff;
+    --border: #e2e8f0;
+    --bmo-teal: #33b2a6;
+    --bmo-teal-mid: #2e9f94;
+    --bmo-side: #2b8e91;
+    --bmo-screen: #e0f7e4;
+    --bmo-outline: #000000;
+    --bmo-yellow: #fce733;
+    --bmo-blue-dark: #2d4fa1;
+    --bmo-blue-light: #7ed9f7;
+    --bmo-green-btn: #56b949;
+    --bmo-red: #e52d3d;
+    --bmo-slot: #0a0a0a;
+    --bmo-tongue: #1b5e20;
+    --bmo-limb: #3d6d6e;
+    --bmo-purple-pill: #6b4f9e;
+}
+
+* { box-sizing: border-box; }
+
 body {
     margin: 0;
-    font-family: Arial;
-    background: #0f172a;
-    color: white;
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    background: var(--surface);
+    color: #0f172a;
+    line-height: 1.5;
 }
 
-.container {
-    max-width: 500px;
-    margin: auto;
-    padding: 20px;
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    width: 100%;
+    margin: 0;
+    background: rgba(0, 97, 242, 0.96);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.avatar {
-    width: 150px;
-    height: 150px;
-    background: #22c55e;
+.site-header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    gap: 1rem;
+}
+
+.logo {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--white);
+    letter-spacing: -0.02em;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.75rem;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links a {
+    color: var(--white);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 0.95;
+}
+
+.nav-links a:hover {
+    opacity: 1;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+@media (max-width: 768px) {
+    .nav-links { display: none; }
+}
+
+.hero {
+    position: relative;
+    background: linear-gradient(160deg, var(--blue) 0%, var(--blue-dark) 55%, #003d99 100%);
+    color: var(--white);
+    overflow: hidden;
+    padding: 2.5rem 1.5rem 4rem;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    left: -15%;
+    top: 10%;
+    width: 420px;
+    height: 420px;
+    border: 2px dashed rgba(255, 255, 255, 0.18);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    right: -8%;
+    bottom: 15%;
+    width: 280px;
+    height: 280px;
+    background: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 8px,
+        rgba(255, 255, 255, 0.04) 8px,
+        rgba(255, 255, 255, 0.04) 10px
+    );
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.hero-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+    .hero-inner { text-align: center; }
+    .hero-ctas { justify-content: center; }
+    .hero-lead { margin-left: auto; margin-right: auto; max-width: 36ch; }
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    background: var(--blue-soft);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+.hero h1 {
+    margin: 0 0 1rem;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+}
+
+.hero-lead {
+    margin: 0 0 1.75rem;
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    max-width: 36ch;
+}
+
+.hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem 1.5rem;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.btn:active { transform: scale(0.98); }
+
+.btn-outline {
+    background: transparent;
+    color: var(--white);
+    border-color: rgba(255, 255, 255, 0.55);
+}
+
+.btn-outline:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--white);
+}
+
+.hero-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 340px;
+}
+
+.bmo-root {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.22));
+    transition: filter 0.35s ease;
+}
+
+.bmo-root[data-state="listening"] {
+    filter: drop-shadow(0 0 28px rgba(250, 204, 21, 0.55));
+}
+
+.bmo-root[data-state="thinking"] {
+    filter: drop-shadow(0 0 24px rgba(126, 217, 247, 0.45));
+}
+
+.bmo-root[data-state="ready"] {
+    filter: drop-shadow(0 16px 32px rgba(0, 0, 0, 0.18));
+}
+
+.bmo-root[data-state="speaking"],
+.bmo-root[data-state="idle"] {
+    filter: drop-shadow(0 0 20px rgba(86, 185, 73, 0.4));
+}
+
+.bmo-root[data-state="error"] {
+    filter: drop-shadow(0 0 24px rgba(229, 45, 61, 0.5));
+}
+
+.bmo-upper {
+    display: flex;
+    align-items: flex-end;
+    gap: 0;
+}
+
+.bmo-arm {
+    width: 11px;
+    height: 76px;
+    background: var(--bmo-limb);
+    border: 3px solid var(--bmo-outline);
+    border-radius: 6px;
+    margin-bottom: 52px;
+    position: relative;
+    flex-shrink: 0;
+    z-index: 1;
+}
+
+.bmo-arm--left {
+    margin-right: -4px;
+    transform: rotate(-22deg);
+    transform-origin: bottom center;
+}
+
+.bmo-arm--right {
+    margin-left: -4px;
+    transform: rotate(22deg);
+    transform-origin: bottom center;
+}
+
+.bmo-hand {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 14px;
+    background: var(--bmo-limb);
+    border: 3px solid var(--bmo-outline);
+    border-radius: 4px 4px 8px 8px;
+}
+
+.bmo-hand::before,
+.bmo-hand::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    width: 5px;
+    height: 8px;
+    background: var(--bmo-limb);
+    border: 2px solid var(--bmo-outline);
+    border-radius: 0 0 3px 3px;
+}
+
+.bmo-hand::before { left: 1px; }
+.bmo-hand::after { right: 1px; }
+
+.bmo-hand-mid {
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 5px;
+    height: 9px;
+    background: var(--bmo-limb);
+    border: 2px solid var(--bmo-outline);
+    border-radius: 0 0 3px 3px;
+}
+
+.bmo-console {
+    display: flex;
+    align-items: stretch;
+    border: 4px solid var(--bmo-outline);
+    border-radius: 26px;
+    overflow: hidden;
+    background: var(--bmo-side);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 6px 0 rgba(0, 0, 0, 0.06);
+    position: relative;
+    z-index: 2;
+    transition: transform 0.25s ease;
+}
+
+.bmo-root[data-state="listening"] .bmo-console {
+    animation: bmo-nod 0.6s ease-in-out infinite alternate;
+}
+
+.bmo-root[data-state="thinking"] .bmo-console,
+.bmo-root[data-state="speaking"] .bmo-console {
+    animation: none;
+}
+
+@keyframes bmo-nod {
+    from { transform: translateY(0); }
+    to { transform: translateY(-4px); }
+}
+
+.bmo-side {
+    width: 36px;
+    flex-shrink: 0;
+    background: var(--bmo-side);
+    border-right: 4px solid var(--bmo-outline);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 0 12px;
+    gap: 10px;
+}
+
+.bmo-speaker {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+}
+
+.bmo-speaker i {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 4px;
+    height: 4px;
+    margin: -2px 0 0 -2px;
+    background: var(--bmo-outline);
+    border-radius: 50%;
+}
+
+.bmo-speaker i:nth-child(1) { transform: rotate(0deg) translateY(-11px); }
+.bmo-speaker i:nth-child(2) { transform: rotate(51.5deg) translateY(-11px); }
+.bmo-speaker i:nth-child(3) { transform: rotate(103deg) translateY(-11px); }
+.bmo-speaker i:nth-child(4) { transform: rotate(154.5deg) translateY(-11px); }
+.bmo-speaker i:nth-child(5) { transform: rotate(206deg) translateY(-11px); }
+.bmo-speaker i:nth-child(6) { transform: rotate(257.5deg) translateY(-11px); }
+.bmo-speaker i:nth-child(7) { transform: rotate(309deg) translateY(-11px); }
+
+.bmo-side-letters {
+    font-weight: 900;
+    font-size: 0.7rem;
+    line-height: 1.05;
+    color: var(--bmo-outline);
+    text-align: center;
+    text-transform: uppercase;
+    user-select: none;
+}
+
+.bmo-arm-socket {
+    margin-top: auto;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    border: 3px solid var(--bmo-outline);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.bmo-face {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    background: linear-gradient(
+        145deg,
+        #3fc9bc 0%,
+        var(--bmo-teal) 38%,
+        var(--bmo-teal-mid) 100%
+    );
+    padding: 16px 14px 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+.bmo-edge-r {
+    width: 18px;
+    flex-shrink: 0;
+    background: linear-gradient(90deg, #247a7d 0%, var(--bmo-side) 100%);
+    border-left: 4px solid var(--bmo-outline);
+}
+
+.bmo-screen {
+    background: var(--bmo-screen);
+    border: 3px solid var(--bmo-outline);
+    border-radius: 14px;
+    aspect-ratio: 55 / 32;
+    position: relative;
+    margin-bottom: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.35);
+}
+
+.bmo-eye {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    background: var(--bmo-outline);
+    border-radius: 50%;
+    top: 30%;
+}
+
+.bmo-eye--l { left: 27%; }
+.bmo-eye--r { right: 27%; }
+
+.bmo-mouth {
+    position: absolute;
+    left: 50%;
+    bottom: 16%;
+    transform: translateX(-50%);
+    width: 50%;
+    height: 30%;
+    background: var(--bmo-outline);
+    border-radius: 3px 3px 20px 20px;
+    overflow: hidden;
+}
+
+.bmo-teeth {
+    height: 32%;
+    background: var(--white);
+    border-bottom: 2px solid var(--bmo-outline);
+}
+
+.bmo-tongue {
+    height: 68%;
+    background: var(--bmo-tongue);
+}
+
+.bmo-root[data-state="thinking"] .bmo-screen {
+    animation: bmo-think-screen 1.4s ease-in-out infinite;
+}
+
+@keyframes bmo-think-screen {
+    0%, 100% { transform: rotate(0deg); }
+    33% { transform: rotate(-2deg); }
+    66% { transform: rotate(2deg); }
+}
+
+.bmo-root[data-state="thinking"] .bmo-eye { top: 24%; }
+
+.bmo-root[data-state="thinking"] .bmo-eye--l {
+    animation: bmo-think-eye-l 2s ease-in-out infinite;
+}
+
+.bmo-root[data-state="thinking"] .bmo-eye--r {
+    animation: bmo-think-eye-r 2s ease-in-out infinite;
+}
+
+@keyframes bmo-think-eye-l {
+    0%, 100% { transform: translate(-2px, -1px); }
+    33% { transform: translate(-4px, -4px); }
+    66% { transform: translate(-1px, -3px); }
+}
+
+@keyframes bmo-think-eye-r {
+    0%, 100% { transform: translate(2px, -1px); }
+    33% { transform: translate(4px, -4px); }
+    66% { transform: translate(1px, -3px); }
+}
+
+.bmo-root[data-state="thinking"] .bmo-teeth,
+.bmo-root[data-state="thinking"] .bmo-tongue {
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+    border: none;
+}
+
+.bmo-root[data-state="thinking"] .bmo-mouth {
+    width: 34%;
+    height: 5px;
+    bottom: 22%;
+    border-radius: 4px;
+    background: var(--bmo-outline);
+    overflow: visible;
+}
+
+.bmo-root[data-state="speaking"] .bmo-screen {
+    animation: bmo-speak-screen 0.16s ease-in-out infinite alternate;
+    transform-origin: center center;
+}
+
+@keyframes bmo-speak-screen {
+    from { transform: translateY(0) rotate(0deg); }
+    to { transform: translateY(-2px) rotate(-1deg); }
+}
+
+.bmo-root[data-state="speaking"] .bmo-mouth {
+    transform-origin: center bottom;
+    animation: bmo-talk-mouth 0.14s ease-in-out infinite alternate;
+}
+
+@keyframes bmo-talk-mouth {
+    from { transform: translateX(-50%) scaleY(0.82); }
+    to { transform: translateX(-50%) scaleY(1.18); }
+}
+
+.bmo-root[data-state="speaking"] .bmo-eye {
+    transform-origin: center;
+    animation: bmo-speak-blink 3.2s infinite;
+}
+
+@keyframes bmo-speak-blink {
+    0%, 92%, 100% { transform: scaleY(1); }
+    94%, 96% { transform: scaleY(0.12); }
+}
+
+.bmo-slot-full {
+    height: 9px;
+    width: 100%;
+    background: var(--bmo-slot);
+    border: 3px solid var(--bmo-outline);
+    border-radius: 3px;
+    margin-bottom: 10px;
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.12);
+}
+
+.bmo-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 14px;
+    align-items: start;
+    flex: 1;
+}
+
+.bmo-col-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.bmo-btn-above-dpad {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--bmo-blue-dark);
+    border: 3px solid var(--bmo-outline);
+    flex-shrink: 0;
+}
+
+.bmo-dpad {
+    width: 56px;
+    height: 56px;
+    position: relative;
+}
+
+.bmo-dpad::before,
+.bmo-dpad::after {
+    content: "";
+    position: absolute;
+    background: var(--bmo-yellow);
+    border: 3px solid var(--bmo-outline);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.bmo-dpad::before {
+    width: 20px;
+    height: 56px;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    border-radius: 7px;
+}
+
+.bmo-dpad::after {
+    width: 56px;
+    height: 20px;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 7px;
+}
+
+.bmo-col-right {
+    display: flex;
+    justify-content: center;
+    padding-top: 2px;
+}
+
+.bmo-actions-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.bmo-tri-svg { display: block; }
+
+.bmo-circle-green {
+    width: 22px;
+    height: 22px;
+    background: var(--bmo-green-btn);
+    border: 3px solid var(--bmo-outline);
+    border-radius: 50%;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.bmo-circle-red {
+    width: 40px;
+    height: 40px;
+    background: var(--bmo-red);
+    border: 3px solid var(--bmo-outline);
+    border-radius: 50%;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.bmo-pills-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.bmo-pill {
+    width: 26px;
+    height: 11px;
+    border: 2px solid var(--bmo-outline);
+    border-radius: 999px;
+}
+
+.bmo-pill--blue { background: var(--bmo-blue-dark); }
+.bmo-pill--purple { background: var(--bmo-purple-pill); }
+
+.bmo-legs {
+    display: flex;
+    gap: 100px;
+    margin-top: -4px;
+    position: relative;
+    z-index: 1;
+}
+
+.bmo-leg {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.bmo-leg-up {
+    width: 10px;
+    height: 14px;
+    background: var(--bmo-limb);
+    border: 3px solid var(--bmo-outline);
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+}
+
+.bmo-foot {
+    width: 26px;
+    height: 12px;
+    background: var(--bmo-limb);
+    border: 3px solid var(--bmo-outline);
+    border-radius: 4px 4px 10px 10px;
+    margin-top: -3px;
+}
+
+.app-section {
+    max-width: 1120px;
+    margin: -2.5rem auto 3rem;
+    padding: 0 1.25rem;
+    position: relative;
+    z-index: 2;
+}
+
+.app-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem 2.5rem;
+    align-items: center;
+}
+
+.app-layout-bmo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.app-layout-bmo .hero-visual {
+    min-height: 0;
+    padding: 0.5rem 0;
+}
+
+.app-layout-chat { min-width: 0; }
+
+@media (max-width: 900px) {
+    .app-layout {
+        grid-template-columns: 1fr;
+        gap: 1.75rem;
+    }
+    .app-layout-bmo { order: 2; }
+    .app-layout-chat { order: 1; }
+}
+
+.chat-card {
+    background: var(--chat-bg);
     border-radius: 20px;
-    margin: 20px auto;
-    transition: 0.3s;
+    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 12px 24px -4px rgba(15, 23, 42, 0.1);
+    border: 1px solid var(--border);
+    padding: 1.75rem;
+}
+
+.chat-card h2 {
+    margin: 0 0 0.35rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.chat-card .sub {
+    margin: 0 0 1.25rem;
+    font-size: 0.875rem;
+    color: #64748b;
 }
 
 .chat {
-    height: 300px;
+    height: 280px;
     overflow-y: auto;
-    background: #1e293b;
-    padding: 10px;
-    border-radius: 10px;
+    background: #f1f5f9;
+    padding: 1rem;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    margin-bottom: 1rem;
 }
 
 .msg {
-    margin: 10px 0;
+    margin: 0.65rem 0;
+    padding: 0.65rem 0.9rem;
+    border-radius: 12px;
+    max-width: 88%;
+    font-size: 0.9rem;
+    line-height: 1.45;
 }
 
-.user {
+.msg.user {
+    margin-left: auto;
     text-align: right;
+    background: var(--blue);
+    color: var(--white);
 }
 
-.bot {
+.msg.bot {
     text-align: left;
+    background: var(--white);
+    color: #1e293b;
+    border: 1px solid var(--border);
 }
 
-button {
+.chat-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+#btn,
+#btnReplay {
     width: 100%;
-    padding: 15px;
-    margin-top: 15px;
+    padding: 0.95rem 1.25rem;
     border: none;
-    border-radius: 10px;
-    background: #3b82f6;
-    color: white;
-    font-size: 16px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
+}
+
+#btn {
+    background: var(--blue);
+    color: var(--white);
+}
+
+#btn:hover { background: var(--blue-dark); }
+#btn:active { transform: scale(0.99); }
+
+#btnReplay {
+    background: var(--white);
+    color: var(--blue);
+    border: 2px solid var(--blue);
+}
+
+#btnReplay:hover:not(:disabled) {
+    background: rgba(0, 97, 242, 0.06);
+}
+
+#btnReplay:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
 }
 
 .status {
     text-align: center;
-    margin-top: 10px;
-    opacity: 0.7;
+    margin-top: 0.85rem;
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+.site-footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    font-size: 0.8rem;
+    color: #94a3b8;
 }
 </style>
 </head>
-
 <body>
 
-<div class="container">
+<header class="site-header">
+    <div class="site-header-inner">
+        <span class="logo">BMO</span>
+        <nav aria-label="Principal">
+            <ul class="nav-links">
+                <li><a href="#inicio">Início</a></li>
+                <li><a href="#conversa">Conversa</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
 
-    <div class="avatar" id="avatar"></div>
+<main>
+    <section class="hero" id="inicio">
+        <div class="hero-inner">
+            <div class="hero-copy">
+                <span class="badge">Assistente BMO</span>
+                <h1>Um BMO pessoal para você</h1>
+                <p class="hero-lead">
+                    Toque em "Ativar BMO" para abrir o microfone e fazer sua pergunta.
+                    O envio é automático após cerca de 2,5 s de silêncio.
+                </p>
+                <p>
+                    "Não nos responsabilizamos por respostas sarcásticas ou aleatórias."
+                </p>
+                <div class="hero-ctas">
+                    <a class="btn btn-outline" href="#conversa">Ver conversa</a>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <div class="chat" id="chat"></div>
+    <section class="app-section" id="conversa">
+        <div class="app-layout">
+            <div class="app-layout-bmo">
+                <div class="hero-visual">
+                    <div class="bmo-root" id="avatar" data-state="ready" aria-label="Personagem BMO">
+                        <div class="bmo-upper">
+                            <div class="bmo-arm bmo-arm--left">
+                                <span class="bmo-hand" aria-hidden="true"><span class="bmo-hand-mid"></span></span>
+                            </div>
+                            <div class="bmo-console">
+                                <aside class="bmo-side" aria-hidden="true">
+                                    <div class="bmo-speaker">
+                                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                                    </div>
+                                    <div class="bmo-side-letters">B<br>M<br>O</div>
+                                    <div class="bmo-arm-socket"></div>
+                                </aside>
+                                <div class="bmo-face">
+                                    <div class="bmo-screen">
+                                        <div class="bmo-eye bmo-eye--l"></div>
+                                        <div class="bmo-eye bmo-eye--r"></div>
+                                        <div class="bmo-mouth">
+                                            <div class="bmo-teeth"></div>
+                                            <div class="bmo-tongue"></div>
+                                        </div>
+                                    </div>
+                                    <div class="bmo-slot-full"></div>
+                                    <div class="bmo-controls">
+                                        <div class="bmo-col-left">
+                                            <div class="bmo-btn-above-dpad"></div>
+                                            <div class="bmo-dpad"></div>
+                                        </div>
+                                        <div class="bmo-col-right">
+                                            <div class="bmo-actions-stack">
+                                                <svg class="bmo-tri-svg" width="32" height="30" viewBox="0 0 32 30" aria-hidden="true">
+                                                    <polygon points="16,4 28,26 4,26" fill="#7ed9f7" stroke="#000" stroke-width="2.5" stroke-linejoin="round"/>
+                                                </svg>
+                                                <span class="bmo-circle-green"></span>
+                                                <span class="bmo-circle-red"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="bmo-pills-row">
+                                        <span class="bmo-pill bmo-pill--blue"></span>
+                                        <span class="bmo-pill bmo-pill--purple"></span>
+                                    </div>
+                                </div>
+                                <div class="bmo-edge-r" aria-hidden="true"></div>
+                            </div>
+                            <div class="bmo-arm bmo-arm--right">
+                                <span class="bmo-hand" aria-hidden="true"><span class="bmo-hand-mid"></span></span>
+                            </div>
+                        </div>
+                        <div class="bmo-legs">
+                            <div class="bmo-leg">
+                                <div class="bmo-leg-up"></div>
+                                <div class="bmo-foot"></div>
+                            </div>
+                            <div class="bmo-leg">
+                                <div class="bmo-leg-up"></div>
+                                <div class="bmo-foot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="app-layout-chat">
+                <div class="chat-card">
+                    <h2>Conversa por voz</h2>
+                    <p class="sub">Ative o microfone e fale</p>
+                    <div class="chat" id="chat"></div>
+                    <div class="chat-actions">
+                        <button type="button" id="btn">Ativar BMO</button>
+                        <button type="button" id="btnReplay" disabled>Ouvir última resposta</button>
+                    </div>
+                    <div class="status" id="status">Pronto</div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
 
-    <button id="btn">Ativar Bimo</button>
-
-    <div class="status" id="status">Pronto</div>
-
-</div>
+<footer class="site-footer">Projeto pessoal, favor não me processar :(</footer>
 
 <script>
 const API_URL = "/voice";
+const SILENCE_MS = 2500;
 
 let mediaRecorder;
+let micStream = null;
 let audioChunks = [];
 let recording = false;
-let listeningWakeWord = false;
 let lastAudio = null;
 
 const btn = document.getElementById("btn");
+const btnReplay = document.getElementById("btnReplay");
 const statusEl = document.getElementById("status");
 const avatar = document.getElementById("avatar");
 const chat = document.getElementById("chat");
@@ -97,66 +984,38 @@ const chat = document.getElementById("chat");
 const startSound = new Audio("https://actions.google.com/sounds/v1/ui/click.ogg");
 const stopSound = new Audio("https://actions.google.com/sounds/v1/ui/confirm.ogg");
 
-// ----------------------
-// WAKE WORD
-// ----------------------
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition;
-
-btn.onclick = () => {
-    startWakeWord();
-    btn.innerText = "🟢 Bimo ativo";
-};
-
-function startWakeWord() {
-    if (!SpeechRecognition) {
-        alert("Seu navegador não suporta reconhecimento de voz");
-        return;
-    }
-
-    recognition = new SpeechRecognition();
-    recognition.lang = "pt-BR";
-    recognition.continuous = true;
-    recognition.interimResults = false;
-
-    recognition.onstart = () => {
-        listeningWakeWord = true;
-        statusEl.innerText = "Aguardando 'Bimo'...";
-    };
-
-    recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript.toLowerCase();
-
-        console.log("Ouvi:", transcript);
-
-        const wakeWords = ["bimo", "bibo", "nimo", "bingo"];
-
-        if (wakeWords.some(word => transcript.includes(word)) && !recording) {
-            recognition.stop();
-            startRecording();
-        }
-    };
-
-    recognition.onerror = (e) => {
-        console.log("Erro reconhecimento:", e);
-    };
-
-    recognition.onend = () => {
-        if (!recording) {
-            setTimeout(() => {
-                recognition.start();
-            }, 500);
-        }
-    };
-
-    recognition.start();
+function setAvatarState(state) {
+    avatar.setAttribute("data-state", state);
 }
 
-// ----------------------
-// GRAVAÇÃO COM SILÊNCIO
-// ----------------------
+btn.onclick = async () => {
+    if (recording || btn.disabled) return;
+    btn.disabled = true;
+    btn.innerText = "Gravando…";
+    try {
+        await startRecording();
+    } catch (e) {
+        console.error(e);
+        btn.disabled = false;
+        btn.innerText = "Ativar Bimo";
+    }
+};
+
+btnReplay.onclick = () => {
+    replayAudio();
+};
+
 async function startRecording() {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    let stream;
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (e) {
+        statusEl.innerText = "Microfone indisponível ou permissão negada";
+        setAvatarState("error");
+        throw e;
+    }
+
+    micStream = stream;
 
     const audioContext = new AudioContext();
     const source = audioContext.createMediaStreamSource(stream);
@@ -178,8 +1037,8 @@ async function startRecording() {
     mediaRecorder.start();
 
     recording = true;
-    statusEl.innerText = "Ouvindo...";
-    avatar.style.background = "#facc15";
+    statusEl.innerText = "A ouvir… fale agora";
+    setAvatarState("listening");
 
     startSound.play();
 
@@ -193,7 +1052,7 @@ async function startRecording() {
         if (volume < 5) {
             if (!silenceStart) silenceStart = Date.now();
 
-            if (Date.now() - silenceStart > 1200) {
+            if (Date.now() - silenceStart > SILENCE_MS) {
                 stopRecording();
                 return;
             }
@@ -214,15 +1073,17 @@ function stopRecording() {
 
     recording = false;
     statusEl.innerText = "Pensando...";
-    avatar.style.background = "#3b82f6";
+    setAvatarState("thinking");
 
     stopSound.play();
 }
 
-// ----------------------
-// ENVIO PARA BACKEND
-// ----------------------
 async function sendAudio() {
+    if (micStream) {
+        micStream.getTracks().forEach(t => t.stop());
+        micStream = null;
+    }
+
     const blob = new Blob(audioChunks, { type: "audio/webm" });
 
     const formData = new FormData();
@@ -238,7 +1099,10 @@ async function sendAudio() {
 
         if (data.error) {
             statusEl.innerText = data.error;
-            avatar.style.background = "#ef4444";
+            setAvatarState("error");
+            btnReplay.disabled = true;
+            btn.disabled = false;
+            btn.innerText = "Ativar Bimo";
             return;
         }
 
@@ -246,35 +1110,40 @@ async function sendAudio() {
         addMessage(data.reply, "bot");
 
         statusEl.innerText = "Falando...";
-        avatar.style.background = "#22c55e";
+        setAvatarState("speaking");
 
         const bytes = Uint8Array.from(
             data.audio.match(/.{1,2}/g).map(b => parseInt(b, 16))
         );
 
         const audioBlob = new Blob([bytes], { type: "audio/wav" });
+        if (lastAudio && lastAudio.src && lastAudio.src.startsWith("blob:")) {
+            URL.revokeObjectURL(lastAudio.src);
+        }
         const audio = new Audio(URL.createObjectURL(audioBlob));
 
         lastAudio = audio;
+        btnReplay.disabled = false;
 
         audio.play();
 
         audio.onended = () => {
-            statusEl.innerText = "Aguardando 'Bimo'...";
-            avatar.style.background = "#22c55e";
-            startWakeWord();
+            statusEl.innerText = "Pronto";
+            setAvatarState("ready");
+            btn.disabled = false;
+            btn.innerText = "Ativar Bimo";
         };
 
     } catch (err) {
         console.error(err);
         statusEl.innerText = "Erro na conexão";
-        avatar.style.background = "#ef4444";
+        setAvatarState("error");
+        btnReplay.disabled = true;
+        btn.disabled = false;
+        btn.innerText = "Ativar Bimo";
     }
 }
 
-// ----------------------
-// CHAT UI
-// ----------------------
 function addMessage(text, type) {
     const div = document.createElement("div");
     div.className = `msg ${type}`;
@@ -284,14 +1153,17 @@ function addMessage(text, type) {
     chat.scrollTop = chat.scrollHeight;
 }
 
-// ----------------------
-// REPLAY ÁUDIO
-// ----------------------
 function replayAudio() {
-    if (lastAudio) {
-        lastAudio.currentTime = 0;
-        lastAudio.play();
-    }
+    if (!lastAudio) return;
+    lastAudio.currentTime = 0;
+    setAvatarState("speaking");
+    statusEl.innerText = "A repetir áudio…";
+    lastAudio.play().catch(() => {
+        setAvatarState("ready");
+        statusEl.innerText = "Pronto";
+        btn.disabled = false;
+        btn.innerText = "Ativar Bimo";
+    });
 }
 </script>
 
