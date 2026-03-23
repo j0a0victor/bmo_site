@@ -110,7 +110,9 @@ async def voice(file: UploadFile = File(...)):
         )
 
         if tts.status_code != 200:
-            return {"error": "Erro no TTS"}
+        print("STATUS:", tts.status_code)
+        print("RESPOSTA CARTESIA:", tts.text)
+           return {"error": tts.text}
 
         return {
             "text": texto,
