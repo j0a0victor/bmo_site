@@ -53,6 +53,8 @@ Regras de comportamento:
 history = []
 
 BASE_DIR = Path(__file__).resolve().parent
+TTS_MODEL_ID = "sonic-turbo"
+TTS_SAMPLE_RATE = 24000
 
 app = FastAPI()
 
@@ -104,7 +106,7 @@ def generate_reply_with_audio(texto: str):
     tts = requests.post(
         "https://api.cartesia.ai/tts/bytes",
         json={
-            "model_id": "sonic-turbo",
+            "model_id": TTS_MODEL_ID,
             "transcript": resposta,
             "voice": {
                 "mode": "id",
@@ -113,7 +115,8 @@ def generate_reply_with_audio(texto: str):
             "output_format": {
                 "container": "wav",
                 "encoding": "pcm_s16le",
-                "sample_rate": 16000
+                # 24 kHz melhora clareza e reduz efeito "comprimido"
+                "sample_rate": TTS_SAMPLE_RATE
             }
         },
         headers={
