@@ -1012,12 +1012,9 @@ body {
 
     .text-input-row { gap: 0.45rem; }
 
-    #textInput,
-    #btnSend,
-    #btnReplay {
-        width: 100%;
-        font-size: 0.95rem;
-    }
+    #textInput { width: auto; min-width: 0; font-size: 0.95rem; }
+    #btnSend { width: auto; min-width: 88px; padding: 0.75rem 0.85rem; font-size: 0.92rem; }
+    #btnReplay { width: 100%; font-size: 0.95rem; }
 
     #btnMic {
         width: 44px;
@@ -1040,6 +1037,30 @@ body {
         left: 25px;
         top: -13px;
         border-width: 0 10px 13px 10px;
+    }
+}
+
+@media (max-width: 500px) {
+    .text-input-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 0.45rem;
+        align-items: center;
+    }
+
+    #textInput {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+
+    #btnSend {
+        grid-column: 1;
+        justify-self: start;
+    }
+
+    #btnMic {
+        grid-column: 2;
+        justify-self: end;
     }
 }
 </style>
@@ -1086,11 +1107,6 @@ body {
                     <p class="sub">Ative o microfone ou fale por texto</p>
                     <div class="chat" id="chat"></div>
                     <div class="chat-actions">
-                        <div class="text-input-row">
-                            <input id="textInput" type="text" placeholder="Digite sua mensagem para o Bimo" />
-                            <button type="button" id="btnSend">Enviar</button>
-                            <button type="button" id="btnMic" title="Gravar voz" aria-label="Gravar voz">🎤</button>
-                        </div>
                         <div class="bmo-inline">
                             <div class="hero-visual">
                                 <div class="bmo-root" id="avatar" data-state="ready" aria-label="Personagem BMO">
@@ -1154,6 +1170,11 @@ body {
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="text-input-row">
+                            <input id="textInput" type="text" placeholder="Digite sua mensagem para o Bimo" />
+                            <button type="button" id="btnSend">Enviar</button>
+                            <button type="button" id="btnMic" title="Gravar voz" aria-label="Gravar voz">🎤</button>
                         </div>
                         <button type="button" id="btnReplay" disabled>Ouvir última resposta</button>
                     </div>
